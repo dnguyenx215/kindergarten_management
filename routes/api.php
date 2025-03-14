@@ -1,5 +1,5 @@
 <?php
-use \App\Http\Controllers;
+
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\EnrollmentController;
@@ -12,12 +12,28 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TuitionFeeController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Đường dẫn lấy thông tin người dùng (nếu cần)
 Route::get('/user', function (Request $request) {
     return $request->user();
+});
+
+// Lấy danh sách người dùng theo role
+Route::get('/users', function (Request $request) {
+    $role = $request->query('role');
+    
+    // Nếu role được chỉ định, lọc theo role đó
+    if ($role) {
+        $users = User::where('role', $role)->get();
+    } else {
+        // Nếu không có role được chỉ định, lấy tất cả người dùng
+        $users = User::all();
+    }
+    
+    return response()->json(['data' => $users], 200);
 });
 
 // Routes cho học sinh
