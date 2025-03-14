@@ -16,28 +16,38 @@ use App\Http\Controllers\StudentMonitoringController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TuitionFeeController;
+use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Đường dẫn lấy thông tin người dùng (nếu cần)
+// Lấy thông tin người dùng hiện tại
 Route::get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Lấy danh sách người dùng theo role
-Route::get('/users', function (Request $request) {
-    $role = $request->query('role');
+// Routes cho UserController
+Route::controller(UserController::class)->group(function () {
+    // Lấy danh sách users với đầy đủ roles và permissions
+    Route::get('/users', 'index');
     
-    // Nếu role được chỉ định, lọc theo role đó
-    if ($role) {
-        $users = User::where('role', $role)->get();
-    } else {
-        // Nếu không có role được chỉ định, lấy tất cả người dùng
-        $users = User::all();
-    }
+    // Lấy chi tiết một user
+    Route::get('/users/{id}', 'show');
     
-    return response()->json(['data' => $users], 200);
+    // Cập nhật thông tin user
+    Route::put('/users/{id}', 'update');
+    
+    // Kiểm tra quyền của user
+    Route::post('/users/{id}/check-permission', 'checkPermission');
+    
+    // Lấy danh sách permissions của user
+    Route::get('/users/{id}/permissions', 'getUserPermissions');
+    
+    // Thêm roles cho user
+    Route::post('/users/{id}/roles', 'assignRoles');
+    
+    // Xóa roles của user
+    Route::delete('/users/{id}/roles', 'removeRoles');
 });
 
 // Routes cho khối học

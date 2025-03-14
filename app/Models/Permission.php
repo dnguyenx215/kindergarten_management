@@ -12,7 +12,12 @@ class Permission extends Model
         'description'
     ];
 
-    // Một permission thuộc về nhiều roles
+    /**
+     * Quan hệ với roles (nhiều-nhiều).
+     * Một permission có thể thuộc về nhiều roles.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_permissions');
