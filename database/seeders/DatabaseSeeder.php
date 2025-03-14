@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +12,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Tắt các ràng buộc khóa ngoại tạm thời
+        Schema::disableForeignKeyConstraints();
+        
+        // Chạy các seeders
+        $this->call([
+            RolesTableSeeder::class,
+            UsersTableSeeder::class,
+            UserRolesTableSeeder::class,
         ]);
+        
+        // Bật lại các ràng buộc khóa ngoại
+        Schema::enableForeignKeyConstraints();
     }
 }

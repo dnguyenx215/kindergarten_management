@@ -19,8 +19,9 @@ class ExtracurricularActivityController extends Controller
     protected function checkAdmin(Request $request)
     {
         $userId = $request->input('user_id');
-        $user = User::find($userId);
-        return $user && strtolower($user->role) === 'admin';
+        $user = User::with('roles')->find($userId);
+
+        return $user && ($user->hasRole('admin') || strtolower($user->role) === 'admin');
     }
 
     /**
@@ -48,10 +49,10 @@ class ExtracurricularActivityController extends Controller
         }
 
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'date'        => 'required|date',
-            'class_id'    => 'required|exists:classes,id',
+            'date' => 'required|date',
+            'class_id' => 'required|exists:classes,id',
         ]);
 
         $activity = ExtracurricularActivity::create($validated);
@@ -81,10 +82,10 @@ class ExtracurricularActivityController extends Controller
         }
 
         $validated = $request->validate([
-            'name'        => 'sometimes|required|string|max:255',
+            'name' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
-            'date'        => 'sometimes|required|date',
-            'class_id'    => 'sometimes|required|exists:classes,id',
+            'date' => 'sometimes|required|date',
+            'class_id' => 'sometimes|required|exists:classes,id',
         ]);
 
         $activity->update($validated);
@@ -125,8 +126,8 @@ class ExtracurricularActivityController extends Controller
         $notifications = [];
         foreach ($teachers as $teacher) {
             $notification = Notification::create([
-                'title'    => 'Thông báo hoạt động ngoại khóa: ' . $activity->name,
-                'message'  => "Hoạt động: {$activity->name}\nNgày tổ chức: {$activity->date}\nMô tả: {$activity->description}",
+                'title' => 'Thông báo hoạt động ngoại khóa: ' . $activity->name,
+                'message' => "Hoạt động: {$activity->name}\nNgày tổ chức: {$activity->date}\nMô tả: {$activity->description}",
                 'staff_id' => $teacher->id,
             ]);
             $notifications[] = $notification;
@@ -134,7 +135,7 @@ class ExtracurricularActivityController extends Controller
 
         return response()->json([
             'message' => 'Thông báo hoạt động ngoại khóa đã được gửi đến giáo viên.',
-            'data'    => $notifications,
+            'data' => $notifications,
         ], 200);
     }
 }
