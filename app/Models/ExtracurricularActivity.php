@@ -6,9 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExtracurricularActivity extends Model
 {
-    protected $fillable = ['name', 'description', 'date', 'class_id'];
+    protected $fillable = [
+        'name', 
+        'description', 
+        'date', 
+        'class_id'
+    ];
 
-    // Quan hệ với lớp học (Classroom)
+    // Một hoạt động ngoại khóa thuộc về một lớp
     public function classroom()
     {
         return $this->belongsTo(Classroom::class, 'class_id');

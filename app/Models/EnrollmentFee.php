@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class EnrollmentFee extends Model
 {
     protected $fillable = [
-        'student_id', 'amount', 'status'
+        'student_id', 
+        'amount', 
+        'status'
     ];
 
     public function student()
     {
-        return $this->belongsTo(\App\Models\Student::class);
+        return $this->belongsTo(Student::class);
     }
 }
