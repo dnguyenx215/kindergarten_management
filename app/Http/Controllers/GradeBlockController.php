@@ -14,9 +14,9 @@ class GradeBlockController extends Controller
     public function index(Request $request)
     {
         $userId = $request->input('user_id');
-        $user = User::find($userId);
-        
-        if (!$user || strtolower($user->role) !== 'admin') {
+        $user = User::with('roles')->find($userId);
+
+        if (!$this->hasAdminPermission($user)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập.'], 403);
         }
 
@@ -30,9 +30,9 @@ class GradeBlockController extends Controller
     public function store(Request $request)
     {
         $userId = $request->input('user_id');
-        $user = User::find($userId);
-        
-        if (!$user || strtolower($user->role) !== 'admin') {
+        $user = User::with('roles')->find($userId);
+
+        if (!$this->hasAdminPermission($user)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập.'], 403);
         }
 
@@ -52,9 +52,9 @@ class GradeBlockController extends Controller
     public function update(Request $request, GradeBlock $gradeBlock)
     {
         $userId = $request->input('user_id');
-        $user = User::find($userId);
-        
-        if (!$user || strtolower($user->role) !== 'admin') {
+        $user = User::with('roles')->find($userId);
+
+        if (!$this->hasAdminPermission($user)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập.'], 403);
         }
 
@@ -74,13 +74,12 @@ class GradeBlockController extends Controller
     public function destroy(Request $request, GradeBlock $gradeBlock)
     {
         $userId = $request->input('user_id');
-        $user = User::find($userId);
-        
-        if (!$user || strtolower($user->role) !== 'admin') {
+        $user = User::with('roles')->find($userId);
+
+        if (!$this->hasAdminPermission($user)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập.'], 403);
         }
 
-        // Kiểm tra xem khối học có lớp học không trước khi xóa
         if ($gradeBlock->classes()->exists()) {
             return response()->json([
                 'message' => 'Không thể xóa khối học đang có lớp học.'
@@ -97,14 +96,40 @@ class GradeBlockController extends Controller
     public function show(Request $request, GradeBlock $gradeBlock)
     {
         $userId = $request->input('user_id');
-        $user = User::find($userId);
-        
-        if (!$user || strtolower($user->role) !== 'admin') {
+        $user = User::with('roles')->find($userId);
+
+        if (!$this->hasAdminPermission($user)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập.'], 403);
         }
 
-        // Nạp danh sách lớp thuộc khối này
         $gradeBlock->load('classes');
         return response()->json(['data' => $gradeBlock], 200);
+    }
+
+    /**
+     * Kiểm tra nếu người dùng có quyền admin
+     * 
+     * @param User|null $user
+     * @return bool
+     */
+    private function hasAdminPermission($user)
+    {
+        if (!$user) {
+            return false;
+        }
+
+        // Nếu vẫn còn trường role trong bảng users (backward compatibility)
+        if (property_exists($user, 'role') && strtolower($user->role) === 'admin') {
+            return true;
+        }
+
+        // Kiểm tra qua bảng quan hệ roles
+        foreach ($user->roles as $role) {
+            if (strtolower($role->name) === 'admin') {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

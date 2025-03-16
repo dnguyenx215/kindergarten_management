@@ -9,7 +9,7 @@ class Classroom extends Model
     protected $table = 'classes';
 
     protected $fillable = [
-        'name', 'capacity', 'homeroom_teacher_id'
+        'name', 'capacity', 'homeroom_teacher_id', 'grade_block_id'
     ];
 
     // Một lớp có nhiều học sinh
@@ -23,4 +23,5 @@ class Classroom extends Model
     {
         return $this->belongsTo(User::class, 'homeroom_teacher_id');
     }
+
 }

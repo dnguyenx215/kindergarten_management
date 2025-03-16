@@ -51,10 +51,24 @@ class AuthController extends Controller
             ]);
         }
 
+        // Tạo token cho user
         $token = $user->createToken('api-token')->plainTextToken;
 
+        // Nạp thêm thông tin roles từ bảng user_roles nếu có
+        if (method_exists($user, 'roles')) {
+            $user->load('roles');
+        }
+
+        // Đảm bảo role được trả về trong response
+        $userData = $user->toArray();
+        
+        // Nếu không có field role trong userData, thêm vào từ thuộc tính gốc
+        if (!isset($userData['role']) && isset($user->role)) {
+            $userData['role'] = $user->role;
+        }
+
         return response()->json([
-            'user'  => $user,
+            'user'  => $userData,
             'token' => $token,
         ]);
     }

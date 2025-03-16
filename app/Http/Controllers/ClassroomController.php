@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Classroom;
 use App\Models\User;
 use Illuminate\Http\Request;
+use function Psy\debug;
 
 class ClassroomController extends Controller
 {
@@ -25,6 +26,7 @@ class ClassroomController extends Controller
         }
 
         $classrooms = Classroom::withCount('students')->orderBy('created_at', 'desc')->get();
+        
         return response()->json(['data' => $classrooms], 200);
     }
 
@@ -42,11 +44,12 @@ class ClassroomController extends Controller
         if (!$this->hasAdminPermission($user)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập.'], 403);
         }
-
+        
         $validated = $request->validate([
             'name'                => 'required|string|max:255',
             'capacity'            => 'required|integer|min:0',
             'homeroom_teacher_id' => 'nullable|exists:users,id',
+            'grade_block_id'      => 'nullable|exists:grade_blocks,id',
         ]);
 
         $classroom = Classroom::create($validated);
@@ -92,6 +95,7 @@ class ClassroomController extends Controller
             'name'                => 'sometimes|required|string|max:255',
             'capacity'            => 'nullable|integer|min:0',
             'homeroom_teacher_id' => 'nullable|exists:users,id',
+            'grade_block_id'      => 'nullable|exists:grade_blocks,id',
         ]);
 
         $classroom->update($validated);
