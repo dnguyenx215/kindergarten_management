@@ -107,6 +107,7 @@ Route::apiResource('enrollment-fees', EnrollmentFeeController::class);
 // Routes cho điểm danh
 Route::get('attendances', [AttendanceController::class, 'index']);
 Route::post('attendances', [AttendanceController::class, 'store']);
+Route::patch('attendances/lock', [AttendanceController::class, 'lockAttendance']); 
 
 // Extracurricular Activities routes (Admin)
 Route::apiResource('extracurricular-activities', ExtracurricularActivityController::class);

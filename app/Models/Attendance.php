@@ -10,6 +10,6 @@ class Attendance extends Model
     protected $table = 'attendance';
 
     protected $fillable = [
-        'student_id', 'date', 'present'
+        'student_id', 'date', 'present', 'is_locked'
     ];
 }
