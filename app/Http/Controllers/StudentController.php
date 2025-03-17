@@ -29,7 +29,7 @@ class StudentController extends Controller
             'parent_name' => 'nullable|string|max:255',
             'parent_phone' => 'nullable|string|max:20',
             'parent_email' => 'nullable|email|max:255',
-            'class_id' => 'nullable|exists:classrooms,id',
+            'class_id' => 'nullable|exists:classes,id',
         ]);
 
         // Tự động tạo student_code nếu không có
@@ -62,7 +62,7 @@ class StudentController extends Controller
             'parent_name' => 'nullable|string|max:255',
             'parent_phone' => 'nullable|string|max:20',
             'parent_email' => 'nullable|email|max:255',
-            'class_id' => 'nullable|exists:classrooms,id',
+            'class_id' => 'nullable|exists:classes,id',
         ]);
 
         $student->update($validated);
